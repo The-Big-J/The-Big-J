@@ -110,8 +110,19 @@ int_to_float:
 	ret 
 # Converts the float to an integer. the non-fractional part of the integer is stored in rax, and the fractional part is stored in rbx
 # RAX will be negative if the float is negative, but RBX will always be positive
+# float will be in xmm1
 float_to_int:
-	ret 	
+	cvttss2si	%xmm1, %eax
+	movss		%xmm1, %xmm2 
+	cvtsi2ss	%eax, %xmm1
+	subss		%xmm2, %xmm1 
+	xorps 		%xmm1, %xmm1
+	movl 		$4294967296, %ecx
+	cvtsi2ss	%ecx, %xmm1
+	orps		%xmm1, %xmm2
+	cvttss2si	%xmm1, %ebx
+	ret 
+	
 # Prints the int in rax to stdout
 print_int:
 	pushq %rbp
