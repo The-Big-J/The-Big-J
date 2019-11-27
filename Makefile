@@ -1,30 +1,26 @@
 #
-# Basic makefile for the project
+# Makefile 2.0, this time it won't delete itself
 #
-
-SRCDIR = src
 BINDIR = bin
-INCDIR = include
+SRCS = $(wildcard src/*.S)
 
-SRCS := $(wildcard $(SRCDIR)/*.S)
-ASFLAGS = --gstabs
-LDFLAGS = 
-ECHO = /bin/echo -e
-OBJECTS := $(addprefix $(BINDIR)/,$(addsuffix .o,$(SRCS)))
-OUTNAME = lab4
-AS = as
+DEFINES = 
 
-all: dirs $(OBJECTS)
-	@$(ECHO) ===== Linking =====
-	$(LD) -o $(BINDIR)/$(OUTNAME) $(OBJECTS)
+ASFLAGS = $(DEFINES) --gstabs -Isrc/
+LDFLAGS =
+OUTNAME = thebigj
+LD = ld
+AS = as 
+LN = ln 
+ECHO = /bin/echo -e 
+RM = rm
 
-dirs:
-	@mkdir -p $(BINDIR)
-	@mkdir -p $(BINDIR)/$(SRCDIR)
-
-clean:
-	@rm -rf $(BINDIR)
-
-%.o: $(SRCS)
-	@$(ECHO) ===== Building $@ =====
-	$(AS) -o $@ $(ASFLAGS) $<
+all:
+	@$(ECHO) "\e[92m========= Building All =========\e[39m"
+	$(AS) $(ASFLAGS) -o $(BINDIR)/main.o $(SRCS)
+	@$(ECHO) "\e[92m=========== Linking ============\e[39m"
+	$(LD) -o $(BINDIR)/$(OUTNAME) $(BINDIR)/main.o
+	@$(ECHO) "\e[92m==== Creating symbolic links ====\e[39m"
+	$(RM) ./$(OUTNAME)
+	$(LN) -s $(BINDIR)/$(OUTNAME) ./$(OUTNAME) 
+	@$(ECHO) "\e[92m============ Done ==============\e[39m"

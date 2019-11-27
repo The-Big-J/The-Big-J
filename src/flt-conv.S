@@ -77,7 +77,6 @@ string_to_int:
 	mulq %r13
 	# Add it to rcx
 	addl %eax, %ecx
-	jc .toobig
 	# If the counter is zero, we're done
 	cmp $0, %r10
 	je .done
@@ -122,7 +121,7 @@ print_int:
 	# Print
 	movl $1, %eax
 	movl $1, %edi
-	movq %r10, %edx
+	movq %r10, %rdx
 	syscall
 	popq %rbp
 	ret 
