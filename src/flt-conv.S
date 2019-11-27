@@ -107,11 +107,11 @@ string_to_int:
 
 # Converts the ingeger in rax to a float
 int_to_float:
-
+	ret 
 # Converts the float to an integer. the non-fractional part of the integer is stored in rax, and the fractional part is stored in rbx
 # RAX will be negative if the float is negative, but RBX will always be positive
 float_to_int:
-	
+	ret 	
 # Prints the int in rax to stdout
 print_int:
 	pushq %rbp
@@ -125,11 +125,15 @@ print_int:
 	syscall
 	popq %rbp
 	ret 
+
 # Prints a floating point number to stdout
 print_float:
+	ret 
 
 # Reads an integer from stdin
 read_int:
+	ret 
 
 # Reads a float from stdin
 read_float:
+	ret 

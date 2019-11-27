@@ -8,8 +8,6 @@
 cgi_file: .asciz "myform.cgi"
 .equ cgi_file_len,.-cgi_file 
 
-fd: .quad 0
-
 .text
 
 .global cgi_do_stuff

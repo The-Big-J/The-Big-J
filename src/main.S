@@ -7,4 +7,5 @@
 .global _start
 
 _start:
-	ret
+	movl $60, %eax
+	syscall
