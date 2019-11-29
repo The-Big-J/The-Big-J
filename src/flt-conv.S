@@ -117,9 +117,9 @@ float_to_int:
 	cvtsi2ss	%eax, %xmm1
 	subss		%xmm2, %xmm1 
 	xorps 		%xmm1, %xmm1
-	movl 		$4294967296, %ecx
+	movl 		$10000000000, %ecx
 	cvtsi2ss	%ecx, %xmm1
-	orps		%xmm1, %xmm2
+	mulps		%xmm1, %xmm2
 	cvttss2si	%xmm1, %ebx
 	ret 
 	
