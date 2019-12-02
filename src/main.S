@@ -7,10 +7,13 @@
 .global _start
 .extern float_to_int
 
-prompt_msg: .ascii "Please enter some floating-point numbers, and press CTRL+D to stop.\n"
+prompt_msg: .ascii "Please enter some floating-point numbers, to exit, enter nothing and press enter\n"
 .equ promptlen,.-prompt_msg 
 
 _start:
+	pushq %rbp
+	movq %rsp, %rbp 
+
 	movl $1, %eax
 	movl $1, %edi
 	movq $promptlen, %rdx
@@ -20,14 +23,13 @@ _start:
 .loop:
 	movl $0, %eax
 	movl $0, %edi
-	movq $128, %edx
+	movl $128, %edx
 	leaq -128(%rbp), %rsi
 	syscall 
 
-	cmpq $4, -128(%rbp)
+	cmpb $0xA, -128(%rbp)
 	je .end 
 	jmp .loop 
-
 
 .end:
 	# Print out all the shit
