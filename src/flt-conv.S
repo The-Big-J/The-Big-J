@@ -51,6 +51,8 @@ int_to_string:
 	ret 
 
 # Converts the string in rsi to an integer and returns it in rax
+# rax holds the count
+# rsi pointer to the bro string
 string_to_int:
 	pushq %rbp
 	movq %rsp, %rbp
@@ -170,5 +172,43 @@ read_float:
 	movq %rsp, %rbp
 
 
+	popq %rbp
+	ret 
+
+# Parses a float from a string
+# rsi has the string
+# rax is the length of the string
+parse_float:
+	pushq %rbp
+	movq %rsp, %rbp
+
+	pushq %rsi 
+	movq $0, %r11 
+.string_loop:
+	cmpb $'.', (%rsi)
+	je .parse_done 
+	decq %rsi 
+	incq %r11 
+
+.parse_done:
+	popq %r10 
+	# Convert the first part to an integer
+	movq %r11, %r12 
+	subq %rax, %r12 
+	movq %r11, %rax 
+	pushq %r12 
+	call string_to_int 
+	popq %rbx 
+	pushq %rax 
+	addq %rbx, %rsi 
+	call string_to_int 
+	popq %rbx
+
+	# Whole is in rbx
+	# Fraction is in ebx
+	cvtsi2ss %rbx, %xmm0 
+	cvtsi2ss %rax, %xmm1
+	
+	#divss %xmm1, 10000
 	popq %rbp
 	ret 
