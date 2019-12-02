@@ -145,11 +145,11 @@ print_float:
 	# Convert the float 
 	call float_to_int 
 	# Save the results
-	push %ebx
+	pushq %rbx
 	# Print out the non-fractional part
 	call print_int
 	# Print out the fractional part
-	pop %eax
+	popq %rax
 	call print_int 
 
 	popq %rbp 
@@ -164,5 +164,11 @@ read_int:
 	ret 
 
 # Reads a float from stdin
+# returns it in xmm1
 read_float:
+	pushq %rbp
+	movq %rsp, %rbp
+
+
+	popq %rbp
 	ret 
