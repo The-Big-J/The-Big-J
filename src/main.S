@@ -8,7 +8,7 @@
 .extern float_to_int
 
 _start:
-	movl $30291, %eax
+	movl $666, %eax
 	cvtsi2ss %eax, %xmm1
 	sqrtss %xmm1, %xmm1
 	call float_to_int

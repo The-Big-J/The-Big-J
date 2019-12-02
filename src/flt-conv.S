@@ -105,22 +105,21 @@ string_to_int:
 	ret
 
 
-# Converts the ingeger in rax to a float
-int_to_float:
-	ret 
 # Converts the float to an integer. the non-fractional part of the integer is stored in rax, and the fractional part is stored in rbx
 # RAX will be negative if the float is negative, but RBX will always be positive
 # float will be in xmm1
 float_to_int:
+	# First step is to convert, with truncation, the float to eax 
 	cvttss2si	%xmm1, %eax
+	# Save non-truncated value in xmm1 to xmm3 
 	movss		%xmm1, %xmm2 
 	cvtsi2ss	%eax, %xmm1
 	subss		%xmm2, %xmm1 
-	xorps 		%xmm1, %xmm1
-	movl 		$10000000000, %ecx
-	cvtsi2ss	%ecx, %xmm1
-	mulps		%xmm1, %xmm2
+	movl 		$100000, %ecx
+	cvtsi2ss	%ecx, %xmm2 
+	mulps		%xmm2, %xmm1 
 	cvttss2si	%xmm1, %ebx
+	negl 		%ebx
 	ret 
 	
 # Prints the int in rax to stdout
@@ -138,11 +137,30 @@ print_int:
 	ret 
 
 # Prints a floating point number to stdout
+# Float will be in xmm1
 print_float:
+	pushq %rbp
+	movq %rsp, %rbp
+
+	# Convert the float 
+	call float_to_int 
+	# Save the results
+	push %ebx
+	# Print out the non-fractional part
+	call print_int
+	# Print out the fractional part
+	pop %eax
+	call print_int 
+
+	popq %rbp 
 	ret 
 
 # Reads an integer from stdin
 read_int:
+	pushq %rbp
+	movq %rsp, %rbp
+
+	popq %rbp 
 	ret 
 
 # Reads a float from stdin
