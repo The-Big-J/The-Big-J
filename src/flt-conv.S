@@ -98,7 +98,7 @@ string_to_int:
 	# count the number of leading zeroes in a parsed
 	# number 
 	subq %rax, %rsi 
-.zero_loop
+.zero_loop:
 	# set if the stringy boi is zero 
 	cmpb $'0', (%rsi)
 	je .zero_found
@@ -304,11 +304,13 @@ strlen:
 	movb %bl, %dl 
 	je .strlen_done 
 	cmpb %bh, (%rsi)
-	movb %bl, %dl 
+	movb %bh, %dl 
 	je .strlen_done 
 	incq %rax
+	incq %rsi 
 	jmp .strlen_loop 
 .strlen_done:
+	popq %rsi 
 	popq %rbp
 	ret 
 
@@ -337,8 +339,9 @@ parse_float:
 	pushq %rax 
 
 	# Strlen again, but of rsi + rax + 1
-	add %rax, %rsi
-	incq %rsi
+	addq %rax, %rsi
+	addq $1, %rsi
+	movq %rsi, -256(%rbp) 
 	call strlen 
 
 	# Quick swap of first and last strlens
@@ -350,7 +353,7 @@ parse_float:
 	cmpb $0xA, %dl
 	je .end_float_parse 
 
-	# Print out an error
+	# Print out an error string
 	leaq error_string, %rsi
 	movl $error_string_len, %edx
 	movl $1, %eax
@@ -358,10 +361,12 @@ parse_float:
 	syscall
 	jmp .parse_float_end 
 
-.end_float_parse 
+.end_float_parse:
 
 	# Convert the first number to an integer
-	movq %rdi, %rsi 
+	movq %rdi, %rsi
+	decq %rsi
+	incq %rax 
 	call string_to_int
 
 	# Convert the parsed integer to a float
@@ -370,6 +375,9 @@ parse_float:
 	# Convert the second number to an integer
 	popq %rax 
 	pushq %rax # Pop and restore rax because we need it
+	movq -256(%rbp), %rsi
+	decq %rsi 
+	incq %rax 
 	call string_to_int 
 
 	# Now, the number of leading zeroes will be in r11
@@ -377,11 +385,20 @@ parse_float:
 	popq %rax
 	addq %r11, %rax
 	# r11 + rax = the number of decimals we have
-	cvtsi2ss %eax, %xmm1 # xmm1 = number of decimals
+	movl $10, %ecx 
+	cvtsi2ss %ecx, %xmm1 # xmm1 = number of decimals
 	cvtsi2ss %ebx, %xmm2 # xmm2 = the number
-
+	movss %xmm1, %xmm4 	
+	# Multiply 10 by the number of decimals
+	decl %eax 
+.pow_loop:
+	mulss %xmm1, %xmm4
+	decl %eax 
+	cmpl $0, %eax
+	jnz .pow_loop
+	
 	# Divide the result by the number of decimal places
-	divss %xmm1, %xmm2 # xmm2 = xmm2 / xmm1
+	divss %xmm4, %xmm2 # xmm2 = xmm2 / xmm1
 
 	# Add the two numbers together to get the float
 	addss %xmm2, %xmm0 
