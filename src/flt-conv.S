@@ -370,6 +370,13 @@ parse_float:
 	call string_to_int
 
 	# Convert the parsed integer to a float
+	cmpq $0, %rax
+	jge .continue_float_parse
+	movb $1, -199(%rbp)
+	jmp .boi
+.continue_float_parse:
+	movb $0, -199(%rbp)
+.boi: 
 	cvtsi2ss %eax, %xmm0 
 
 	# Convert the second number to an integer
@@ -387,6 +394,12 @@ parse_float:
 	# r11 + rax = the number of decimals we have
 	movl $10, %ecx 
 	cvtsi2ss %ecx, %xmm1 # xmm1 = number of decimals
+	
+	# rbp-199 has a flag if we're negative
+	cmpb $1, -199(%rbp)
+	jne .continue1
+	negq %rbx 
+.continue1: 
 	cvtsi2ss %ebx, %xmm2 # xmm2 = the number
 	movss %xmm1, %xmm4 	
 	# Multiply 10 by the number of decimals
