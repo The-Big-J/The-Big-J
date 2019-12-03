@@ -2,6 +2,14 @@
 # Main entry point for application
 #
 
+.data
+
+# argc and argv 
+argc: .long 0
+argv: .quad 0
+
+float_array: .fill 400
+
 .text
 
 .global _start
@@ -11,12 +19,6 @@ prompt_msg: .ascii "Please enter some floating-point numbers, to exit, enter not
 
 test_float: .ascii "-124.552\n"
 .equ test_float_len,.-test_float 
-
-# argc and argv 
-argc: .long 0
-argv: .quad 0
-
-float_array: .fill 400
 
 _start:
 	# Save command line parameters
@@ -29,16 +31,13 @@ _start:
 	pushq %rbp
 	movq %rsp, %rbp 
 
-	leaq test_float, %rsi
-	movl $test_float_len, %eax
-	call parse_float 
-
 	movl $1, %eax
 	movl $1, %edi
 	movq $promptlen, %rdx
 	leaq prompt_msg, %rsi
 	syscall 
-
+	# Load pointer to our float array 
+	leaq float_array, %rdi 
 .loop:
 	pushq %rdi 
 	movl $0, %eax
@@ -56,6 +55,8 @@ _start:
 	popq %rdi
 	movss %xmm0, (%rdi)
 	addq $4, %rdi 
+	
+	call print_float
 
 	jmp .loop 
 

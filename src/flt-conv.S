@@ -66,7 +66,7 @@ int_to_string:
 	ret 
 
 # Converts the string in rsi to an integer and returns it in rax
-# rax holds the count
+# rax holds the length of the string
 # rsi pointer to the bro string
 # Returns the number of leading zeroes in r11
 string_to_int:
