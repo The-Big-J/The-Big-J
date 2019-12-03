@@ -5,8 +5,6 @@
 .text
 
 .global _start
-.extern float_to_int
-.extern parse_float
 
 prompt_msg: .ascii "Please enter some floating-point numbers, to exit, enter nothing and press enter\n"
 .equ promptlen,.-prompt_msg 
