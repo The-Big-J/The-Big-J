@@ -1,5 +1,5 @@
 # The-Big-J
-This is our final group project for CS-113.
+This is our final group project for CS-118.
 It's a float calculator using SSE/SSE2 scalar fp instructions.
 
 ## Building
