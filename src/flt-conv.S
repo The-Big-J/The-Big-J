@@ -3,12 +3,23 @@
 #
 .text
 
+# This is used to disable the external symbols in common.S
+# We need the externs to be disabled in common.S because those symbols
+# are actually declared in this source file. Other files can include
+# common.S and it will declare externs for flt-conf.S so they dont need
+# to explicitly do that
+.equ FLT_CONV_S,1
+
 .include "common.S"
 
 .global int_to_string
 .global string_to_int
 .global int_to_float
-.global float_to_int 
+.global float_to_int
+.global print_float
+.global print_char
+.global read_char
+.global parse_float 
 
 # Converts the int in rax to a string and stores it in rsi
 # This function will assume that at least 32 bytes of space are allocated for the buffer pointed
@@ -119,11 +130,11 @@ float_to_int:
 	subss		%xmm2, %xmm1 
 	movl 		$100000, %ecx
 	cvtsi2ss	%ecx, %xmm2 
-	mulps		%xmm2, %xmm1 
-	cvttss2si	%xmm1, %ebx
+	mulss		%xmm2, %xmm1 
+	cvtss2si	%xmm1, %ebx
 	negl 		%ebx
 	ret 
-	
+
 # Prints the int in rax to stdout
 print_int:
 	pushq %rbp
@@ -138,6 +149,41 @@ print_int:
 	popq %rbp
 	ret 
 
+# Prints the char in al to STDOUT 
+print_char:
+	pushq %rbp
+	movq %rsp, %rbp
+
+	# Quick thing to print a single char
+	movb %al, -1(%rbp)
+	leaq -1(%rbp), %rsi
+	movl $1, %edi
+	movl $1, %eax
+	movl $1, %edx
+	syscall 
+
+	popq %rbp
+	ret 
+
+# Reads a single char from stdin
+# Note: This will read a large string
+# and just return the first char in al 
+read_char:
+	pushq %rbp
+	movq %rsp, %rbp
+
+	# Read 32 chars into stack buffer
+	leaq -32(%rbp), %rsi
+	movl $0, %eax
+	movl $0, %edi
+	movl $32, %edx
+	syscall
+
+	movb -32(%rbp), %al 
+
+	popq %rbp
+	ret 
+
 # Prints a floating point number to stdout
 # Float will be in xmm1
 print_float:
@@ -146,11 +192,20 @@ print_float:
 
 	# Convert the float 
 	call float_to_int 
-	# Save the results
+	# Save the fractional part
+	# which is in EBX
 	pushq %rbx
+
 	# Print out the non-fractional part
+	# (Already in EAX) 
 	call print_int
-	# Print out the fractional part
+	
+	# Print out a single decimal point
+	movb $'.', %al 
+	call print_char 
+
+	# Print out the fractional part, but
+	# fist pop the fraction in RAX 
 	popq %rax
 	call print_int 
 
