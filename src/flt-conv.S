@@ -21,6 +21,10 @@
 .global read_char
 .global parse_float 
 
+# String constants
+error_string: .ascii "Failed to parse float: Malformed float"
+.equ error_string_len,.-error_string 
+
 # Converts the int in rax to a string and stores it in rsi
 # This function will assume that at least 32 bytes of space are allocated for the buffer pointed
 # to by rsi
@@ -285,6 +289,29 @@ read_float:
 	popq %rbp
 	ret 
 
+# Returns length of string pointed to by rsi in rax
+# You can specify two delimiters to search for. 
+# One is in bh, and the other is in bl
+# The delimiter that was hit will be stored in dl
+strlen: 
+	pushq %rbp
+	movq %rsp, %rbp
+
+	pushq %rsi # Saves rsi
+	xorq %rax, %rax 
+.strlen_loop:
+	cmpb %bl, (%rsi)
+	movb %bl, %dl 
+	je .strlen_done 
+	cmpb %bh, (%rsi)
+	movb %bl, %dl 
+	je .strlen_done 
+	incq %rax
+	jmp .strlen_loop 
+.strlen_done:
+	popq %rbp
+	ret 
+
 # Parses a float from a string
 # rsi has the string
 # rax is the length of the string
@@ -292,33 +319,73 @@ parse_float:
 	pushq %rbp
 	movq %rsp, %rbp
 
-	pushq %rsi 
-	movq $0, %r11 
-.string_loop:
-	cmpb $'.', (%rsi)
-	je .parse_done 
-	decq %rsi 
-	incq %r11 
+	# Save rsi in rdi 
+	movq %rsi, %rdi 
 
-.parse_done:
-	popq %r10 
-	# Convert the first part to an integer
-	movq %r11, %r12 
-	subq %rax, %r12 
-	movq %r11, %rax 
-	pushq %r12 
-	call string_to_int 
+	# Use our strlen function to search for either a decimal point 
+	# or a newline
+	movb $'.', %bl
+	movb $0xA, %bh
+	call strlen 
+
+	# dl has the delimiter that was hit, so compare and see if we have
+	# another string to parse
+	cmpb $0xA, %dl 
+	je .end_float_parse
+
+	# Save the old strlen
+	pushq %rax 
+
+	# Strlen again, but of rsi + rax + 1
+	add %rax, %rsi
+	incq %rsi
+	call strlen 
+
+	# Quick swap of first and last strlens
 	popq %rbx 
 	pushq %rax 
-	addq %rbx, %rsi 
-	call string_to_int 
-	popq %rbx
+	movq %rbx, %rax 
 
-	# Whole is in rbx
-	# Fraction is in ebx
-	cvtsi2ss %rbx, %xmm0 
-	cvtsi2ss %rax, %xmm1
-	
-	#divss %xmm1, 10000
+	# Check that dl is a newline and not something else
+	cmpb $0xA, %dl
+	je .end_float_parse 
+
+	# Print out an error
+	leaq error_string, %rsi
+	movl $error_string_len, %edx
+	movl $1, %eax
+	movl $1, %edi
+	syscall
+	jmp .parse_float_end 
+
+.end_float_parse 
+
+	# Convert the first number to an integer
+	movq %rdi, %rsi 
+	call string_to_int
+
+	# Convert the parsed integer to a float
+	cvtsi2ss %eax, %xmm0 
+
+	# Convert the second number to an integer
+	popq %rax 
+	pushq %rax # Pop and restore rax because we need it
+	call string_to_int 
+
+	# Now, the number of leading zeroes will be in r11
+	movq %rax, %rbx 
+	popq %rax
+	addq %r11, %rax
+	# r11 + rax = the number of decimals we have
+	cvtsi2ss %eax, %xmm1 # xmm1 = number of decimals
+	cvtsi2ss %ebx, %xmm2 # xmm2 = the number
+
+	# Divide the result by the number of decimal places
+	divss %xmm1, %xmm2 # xmm2 = xmm2 / xmm1
+
+	# Add the two numbers together to get the float
+	addss %xmm2, %xmm0 
+
+.parse_float_end: 
 	popq %rbp
 	ret 
