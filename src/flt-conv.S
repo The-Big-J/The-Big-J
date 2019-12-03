@@ -287,7 +287,43 @@ read_float:
 
 
 	popq %rbp
-	ret 
+	ret
+
+# Verifies a string is a valid floating point number
+# String in rsi, length in rax
+# Return 1 for BAD and 0 for OK
+verify_float:
+	pushq %rbp
+	movq %rsp, %rbp 
+	# Flag for a decimal point at rbp-16
+	movb $0, -16(%rbp)
+	# LOOP
+.verify_loop:
+	cmpb $0xA, (%rsi)
+	je .done79 
+	cmpb $'.', (%rsi)
+	jne .cont1 
+	cmpb $1, -16(%rbp)
+	je .error_verify_float
+	movb $1, -16(%rbp) 
+.cont1: 
+	cmpb $':', (%rsi)
+	jae .error_verify_float
+	cmpb $'/', (%rsi)
+	jbe .error_verify_float 
+.verify_loop_tail:
+	incq %rsi 
+	decq %rax
+	jz .done69
+	jmp .verify_loop
+.done79:
+	movl $0, %eax 
+.error_verify_float:
+	movl $1, %eax 
+.done69:
+	popq %rbp 
+	ret
+
 
 # Returns length of string pointed to by rsi in rax
 # You can specify two delimiters to search for. 
@@ -407,7 +443,6 @@ parse_float:
 .pow_loop:
 	mulss %xmm1, %xmm4
 	decl %eax 
-	cmpl $0, %eax
 	jnz .pow_loop
 	
 	# Divide the result by the number of decimal places

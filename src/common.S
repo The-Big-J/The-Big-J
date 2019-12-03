@@ -20,6 +20,7 @@
 .extern float_to_int
 .extern print_float
 .extern parse_float
+.extern verify_float
 
 .else
 
@@ -30,7 +31,7 @@
 .global float_to_int
 .global print_float
 .global parse_float
-
+.global verify_float 
 .endif
 
 

@@ -49,14 +49,19 @@ _start:
 	cmpb $0xA, -128(%rbp)
 	je .end 
 
+	pushq %rax 
+	leaq -128(%rbp), %rsi
+	call verify_float
+	cmpl $1, %eax
+	je .end
+	popq %rax 
+
 	leaq -128(%rbp), %rsi 
 	call parse_float 
 	
 	popq %rdi
 	movss %xmm0, (%rdi)
 	addq $4, %rdi 
-	
-	call print_float
 
 	jmp .loop 
 
