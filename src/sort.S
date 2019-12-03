@@ -14,8 +14,7 @@ sort:
 	movq %rsp, %rbp
 	
 	movq	%rax,	%r15	#holds number of f_numbers
-#	movq	%r15,	%r14
-#	decq		%r14				#holds number of f_numbers minus 1
+	incq		%r15
 
 bigLoop:		
 	cmpq	1,	%r15		#r15 will count down from nums of f_num to 1
