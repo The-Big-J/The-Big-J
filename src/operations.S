@@ -2,10 +2,11 @@
 .text
 .extern float_array
 
+
 #4 functions for operations called in main.
 addition:
 movss (float_array), %xmm0
-movss 4(float_array), %xmm1
+movss (float_array+4), %xmm1
 movss %xmm0, %xmm2
 addss %xmm1, %xmm0
 call print_float
