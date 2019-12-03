@@ -7,12 +7,6 @@
 
 .global sort
 
-# bubble sort : O(n^2)	
-	
-	# [4.5, 2.3, 94.2, 43.3, 10.3]
-	# r8 = 1
-	# r9 = 1
-
 #rdi pointer to array
 #rax length of the array
 sort:
@@ -20,24 +14,32 @@ sort:
 	movq %rsp, %rbp
 	
 	movq	%rax,	%r15	#holds number of f_numbers
-	movq	%r15,	%r14
-	decq		%r14				#holds number of f_numbers minus 1
+#	movq	%r15,	%r14
+#	decq		%r14				#holds number of f_numbers minus 1
 
-#if there are 5 numbers, then big loop 5 times
-	movq	$1,	%r8
-BigLoop:		
-	cmpq	%r15,	%r8
-	jae		done
+bigLoop:		
+	cmpq	1,	%r15		#r15 will count down from nums of f_num to 1
+	jbe		done			#then end
+	movq	$0,		%r8		#start swapping from first element
 	movq	$1,		%r9
-SmallLoop:
-	cmpq	%r14,	%r9
-	jae		BigLoop
-	movss (%rdi, %r9, 4), %xmm0
+	decq		%r15
+smallLoop:
+	cmpq	%r15,	%r8	#stop swapping here
+	jae		bigLoop
+	movss (%rdi, %r8, 4), %xmm0
 	movss (%rdi, %r9, 4), %xmm1
-	
-	
 
-	
+	comiss %xmm0, %xmm1
+	ja 		afterSwap		#if second number is bigger, don't swap
+swap:
+	movss %xmm1, (%rdi, %r8, 4)
+	movss %xmm0, (%rdi, %r9, 4)
+afterSwap:
+	incq		%r8
+	incq		%r9
+	jmp		smallLoop
+
+
 done:
 	popq %rbp
 	ret 
