@@ -12,16 +12,22 @@ addss %xmm1, %xmm0
 call print_float
 
 subtraction:
+movss (float_array), %xmm0
+movss (float_array+4), %xmm1
 movss %xmm2, %xmm0 
 subss %xmm1, %xmm0 
 call print_float
 
 division:
+movss (float_array), %xmm0
+movss (float_array+4), %xmm1
 movss %xmm2, %xmm0
 divss %xmm1, %xmm0
 call print_float
 
 multipulcation:
+movss (float_array), %xmm0
+movss (float_array+4), %xmm1
 movss %xmm2, %xmm0
 mulss %xmm1, %xmm0
 call print_float
