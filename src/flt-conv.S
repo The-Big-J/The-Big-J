@@ -64,27 +64,58 @@ int_to_string:
 # Converts the string in rsi to an integer and returns it in rax
 # rax holds the count
 # rsi pointer to the bro string
+# Returns the number of leading zeroes in r11
 string_to_int:
 	pushq %rbp
 	movq %rsp, %rbp
-.restart:
+	
+	# Register cleanup 
 	xorq %r15, %r15
+	xorq %r11, %r11 
 	subq $1, %rax 
+	
+	# Check if the number is negative,
+	# if so, do some fancy stuff
 	cmpb $'-', 1(%rsi)
 	jne .cont
+
+	# If we are negative... 
 	addq $1, %rsi
 	subq $1, %rax
-	movq $1, %r15
+	movq $1, %r15 
+	
+	# Otherwise, setup the regst of everything 
 .cont:
 	addq %rax, %rsi
 	movq %rax, %r10 # This will be used as a counter
-	# Perform an xor to clear the regs
+	# Save rsi for later
+	pushq %rsi
+	# This is a simple loop that will
+	# count the number of leading zeroes in a parsed
+	# number 
+	subq %rax, %rsi 
+.zero_loop
+	# set if the stringy boi is zero 
+	cmpb $'0', (%rsi)
+	je .zero_found
+	jmp .after_zero_loop 
+.zero_found:
+	# If there is a zero, increment both the counter and pointer
+	incq %r11 
+	incq %rsi 
+	jmp .zero_loop 
+.after_zero_loop: 
+	# Restore rsi and clear some things out
+	popq %rsi 
 	xorl %eax, %eax
 	xorl %ecx, %ecx
+
+	# Setup the initial vals for the numloop
 	movq $1, %r13 
 	movb (%rsi), %al
 	subb $0x30, %al
 .numloop:
+	# Decrement counter
 	decq %r10
 	# Multiply the value in al by r13
 	mulq %r13
@@ -110,7 +141,7 @@ string_to_int:
 	# Actually not done, just need to see if it was negative
 	cmpq $1, %r15
 	jne .reallydone
-	# Two's complement of rcx
+	# Two's complement of rcx, if negative
 	negq %rcx
 .reallydone:
 	movq %rcx, %rax
