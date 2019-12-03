@@ -1,5 +1,5 @@
 #
-# CGI shit
+# CGI stuff
 #
 .equ O_CREAT,64
 .equ O_RDWR,2
