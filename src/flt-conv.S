@@ -149,6 +149,30 @@ print_int:
 	popq %rbp
 	ret 
 
+# Prompts a user with the prompt in rsi
+# length of your prompt should be in rdx
+# The buffer you want the user input to be put into
+# should be in rdi
+# You'll need at least 128 bytes of space for this string
+prompt_user:
+	pushq %rbp
+	movq %rsp, %rbp
+
+	# Print out the prompt string
+	movl $1, %eax
+	movl $1, %edi
+	syscall
+
+	# Read the input
+	movl $0, %eax
+	movl $0, %edi
+	movq %rdi, %rsi 
+	movl $128, %edx
+	syscall 
+
+	popq %rbp
+	ret 
+
 # Prints the char in al to STDOUT 
 print_char:
 	pushq %rbp
