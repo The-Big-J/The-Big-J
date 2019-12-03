@@ -20,8 +20,10 @@ float_array: .fill 400
 
 _start:
 	# Save command line parameters
-	movl (%rsp), argc
-	movq 8(%rsp), argv  
+	movl (%rsp), %eax 
+	movq 8(%rsp), %rbx
+	movl %eax, argc
+	movq %rbx, argv 
 
 	# Setup stack frame 
 	pushq %rbp
