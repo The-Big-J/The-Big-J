@@ -17,6 +17,9 @@ float_array: .fill 400
 prompt_msg: .ascii "Please enter some floating-point numbers, to exit, enter nothing and press enter\n"
 .equ promptlen,.-prompt_msg 
 
+prompt_msg2: .ascii "1 for add, 2 for sub, 3 for mul, 4 for div\n"
+.equ promptlen2,.-prompt_msg2
+
 test_float: .ascii "-124.552\n"
 .equ test_float_len,.-test_float 
 
@@ -79,7 +82,46 @@ _start:
 	movss -8(%rdi), %xmm14
 	movss -4(%rdi), %xmm15
 	
+	movl $1, %eax
+	movl $1, %edi
+	movq $promptlen2, %rdx
+	leaq prompt_msg2, %rsi
+	syscall 
 	
+	movl $0, %eax
+	movl $0, %edi
+	movl $128, %edx
+	leaq -128(%rbp), %rsi
+	syscall 
+	
+	cmpb $0x1, -128(%rbp)
+	je .add
+
+	cmpb $0x2, -128(%rbp)
+	je .sub
+	
+	cmpb $0x3, -128(%rbp)
+	je .mul
+	
+	cmpb $0x4, -128(%rbp)
+	je .div
+	
+.add:
+call addition
+jmp .end
+
+.sub:
+call subtraction
+jmp .end
+
+.mul:
+call multipulcation
+jmp .end
+
+.div:
+call division
+jmp .end
+
 .end:
 	# Print out all the shit
 

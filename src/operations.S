@@ -1,33 +1,48 @@
 #operations for the program so the user can add/subtract/etc
 .text
-.extern float_array
 
 
 #4 functions for operations called in main.
 addition:
-movss (float_array), %xmm0
-movss (float_array+4), %xmm1
-movss %xmm0, %xmm2
-addss %xmm1, %xmm0
+pushq %rbp
+movq %rsp, %rbp 
+movss %xmm11, %xmm0
+movss %xmm12, %xmm1
+movss %xmm1, %xmm2
+addss %xmm0, %xmm1
 call print_float
+popq %rbp
+ret
 
 subtraction:
-movss (float_array), %xmm0
-movss (float_array+4), %xmm1
-movss %xmm2, %xmm0 
-subss %xmm1, %xmm0 
+pushq %rbp
+	movq %rsp, %rbp 
+movss %xmm11, %xmm0
+movss %xmm12, %xmm1
+movss %xmm1, %xmm2
+subss %xmm0, %xmm1
 call print_float
+popq %rbp
+ret
 
 division:
-movss (float_array), %xmm0
-movss (float_array+4), %xmm1
-movss %xmm2, %xmm0
-divss %xmm1, %xmm0
+pushq %rbp
+	movq %rsp, %rbp 
+movss %xmm11, %xmm0
+movss %xmm12, %xmm1
+movss %xmm1, %xmm2
+divss %xmm0, %xmm1
 call print_float
+popq %rbp
+ret
 
 multipulcation:
-movss (float_array), %xmm0
-movss (float_array+4), %xmm1
-movss %xmm2, %xmm0
-mulss %xmm1, %xmm0
+pushq %rbp
+	movq %rsp, %rbp 
+movss %xmm11, %xmm0
+movss %xmm12, %xmm1
+movss %xmm1, %xmm2
+mulss %xmm0, %xmm1
 call print_float
+popq %rbp
+ret
