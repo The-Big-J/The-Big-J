@@ -9,11 +9,11 @@ argc: .long 0
 argv: .quad 0
 
 float_array: .fill 400
+float_array_size: .long 0
 
 .text
 
 .global _start
-
 
 http: .string "Content-type: text/html\n"
 .equ htmllen,.-http 
@@ -68,6 +68,7 @@ _start:
 	syscall 
 	# Load pointer to our float array 
 	leaq float_array, %rdi 
+	movl $0, float_array_size
 .loop:
 	pushq %rdi 
 	movl $0, %eax
@@ -85,6 +86,7 @@ _start:
 	popq %rdi
 	movss %xmm0, (%rdi)
 	addq $4, %rdi 
+	addl $1, float_array_size
 	
 	cmpq $3, %r9
 	ja .OPQRST
@@ -171,6 +173,8 @@ movl $1, %eax
 
 .sort:
 	leaq float_array, %rdi
+	movq $0, %rax
+	movl float_array_size, %eax
 	addq $20, %rdi
 	call sort
 
