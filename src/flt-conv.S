@@ -32,7 +32,8 @@ int_to_string:
 	pushq %rbp
 	movq %rsp, %rbp
 	# Clear rdx
-	xorl %edx, %edx 
+	xorl %edx, %edx
+	xorq %r10, %r10
 	# Move 10 to rbx 
 	movq $10, %rbx
 	movq %rsi, %rcx
@@ -45,6 +46,7 @@ int_to_string:
 	negq %rax
 	movq $1, %r15 
 .printloop:
+	incq %r10 
 	movq $10, %r14
 	divq %r14 
 	addb $0x30, %dl
@@ -62,6 +64,7 @@ int_to_string:
 	decq %rcx 
 	movb $'-', (%rcx)
 .finishprint:
+	movq %rcx, %rsi 
 	popq %rbp
 	ret 
 
@@ -174,13 +177,17 @@ float_to_int:
 print_int:
 	pushq %rbp
 	movq %rsp, %rbp 
+	
+	# Load into stach buffer
 	leaq -32(%rbp), %rsi
 	call int_to_string
+
 	# Print
 	movl $1, %eax
 	movl $1, %edi
 	movq %r10, %rdx
 	syscall
+	
 	popq %rbp
 	ret 
 
@@ -250,7 +257,8 @@ print_float:
 	movq %rsp, %rbp
 
 	# Convert the float 
-	call float_to_int 
+	call float_to_int
+
 	# Save the fractional part
 	# which is in EBX
 	pushq %rbx
