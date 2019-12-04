@@ -67,17 +67,18 @@ _start:
 	movss %xmm0, (%rdi)
 	addq $4, %rdi 
 	
-	cmpq $4, %r9
+	cmpq $3, %r9
 	ja .OPQRST
 	incq %r9
 	jmp .loop 
 
 .OPQRST:
-	movss -16(%rdi), %xmm11
-	movss -12(%rdi), %xmm12
-	movss -8(%rdi), %xmm13
-	movss -4(%rdi), %xmm14
-	movss (%rdi), %xmm15
+	movss -20(%rdi), %xmm11
+	movss -16(%rdi), %xmm12
+	movss -12(%rdi), %xmm13
+	movss -8(%rdi), %xmm14
+	movss -4(%rdi), %xmm15
+	
 	
 .end:
 	# Print out all the shit
