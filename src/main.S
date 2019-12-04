@@ -4,8 +4,6 @@
 
 .data
 
-
-
 # argc and argv 
 argc: .long 0
 argv: .quad 0
@@ -37,16 +35,25 @@ _start:
 	
 #.cgi:
 #	decq %rsp
-#	cmpb $':', %rsp
+#	cmpq $':', %rsp
 #	jne .cgi
 	
 #.cgi2:
 #	incq %rsp
-#	cmpb $'=', %rsp
+#	cmpq $'=', %rsp
 #	jne .cgi2
 #	incq %rsp
 
 #.cgi3:
+#	movl $0, %eax
+#	movl $0, %edi
+#	movl $128, %edx
+#	leaq -128(%rbp), %rsi
+#	syscall 
+#	incq %rsp
+#	cmpq $'&', %rsp
+#	jne .cgi3
+	
 	
 	
 	
@@ -58,6 +65,7 @@ _start:
 	movl $1, %edi
 	movq $htmllen, %rdx
 	leaq http, %rsi
+	syscall
 
 	movl $1, %eax
 	movl $1, %edi
