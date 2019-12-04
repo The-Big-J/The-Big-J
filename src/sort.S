@@ -16,6 +16,7 @@ sort:
 	pushq %rbp
 	movq %rsp, %rbp
 
+	pushq	%rax
 	movq	%rax,	%r15	#holds number of f_numbers
 	#incq			%r15
 
@@ -43,38 +44,27 @@ afterSwap:
 
 done:
 
+	popq %rax
+	movq %rax, %r15
+	movq $0, %r8
+printing_loop:
+	cmpq	$0, %r15
+	jbe after_printing
+	decq %r15
 	push %rdi
 	call print_endl
-	movss -20(%rdi), %xmm1
+	movss -20(%rdi, %r8, 4), %xmm1
+	push %r15
+	push %r8
 	call print_float
+	pop %r8
+	pop %r15
+	addq $1, %r8
 	pop %rdi
-	
-	push %rdi
-	call print_endl
-	movss -16(%rdi), %xmm1
-	call print_float
-	pop %rdi
-	
-	push %rdi
-	call print_endl
-	movss -12(%rdi), %xmm1
-	call print_float
-	pop %rdi
-	
-	push %rdi
-	call print_endl
-	movss -8(%rdi), %xmm1
-	call print_float
-	pop %rdi
-	
-	push %rdi
-	call print_endl
-	movss -4(%rdi), %xmm1
-	call print_float
-	pop %rdi
-	
-	call print_endl
+	jmp printing_loop
 
+after_printing:
+	call print_endl
 	popq %rbp
 	ret 
 	
@@ -95,5 +85,3 @@ print_endl:
 	popq %rdi
 	popq %rbp
 	ret 
-	
-
