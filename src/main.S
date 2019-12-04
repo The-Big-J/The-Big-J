@@ -83,7 +83,7 @@ _start:
 	syscall 
 
 	cmpb $0xA, -128(%rbp)
-	je .end 
+	je .OPQRST
 
 	leaq -128(%rbp), %rsi 
 	call parse_float 
@@ -98,11 +98,11 @@ _start:
 	jmp .loop 
 
 .OPQRST:
-	movss -20(%rdi), %xmm11
-	movss -16(%rdi), %xmm12
-	movss -12(%rdi), %xmm13
-	movss -8(%rdi), %xmm14
-	movss -4(%rdi), %xmm15
+	movss (float_array), %xmm11
+	movss (float_array+4), %xmm12
+	movss (float_array+8), %xmm13
+	movss (float_array+12), %xmm14
+	movss (float_array+16), %xmm15
 	
 	movl $1, %eax
 	movl $1, %edi
