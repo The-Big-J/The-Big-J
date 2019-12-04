@@ -3,9 +3,9 @@
 # Sorting!
 #
 
+.include "common.S"
+
 .text
-
-
 
 .global sort
 .global print_endl

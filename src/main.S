@@ -21,7 +21,7 @@ http: .string "Content-type: text/html\n"
 prompt_msg: .ascii "Please enter some floating-point numbers, to exit, enter nothing and press enter\n"
 .equ promptlen,.-prompt_msg 
 
-prompt_msg2: .ascii "1 for add, 2 for sub, 3 for mul, 4 for div\n"
+prompt_msg2: .ascii "1 for add, 2 for sub, 3 for mul, 4 for div, 5 for sort\n"
 .equ promptlen2,.-prompt_msg2
 
 test_float: .ascii "-124.552\n"
@@ -129,6 +129,9 @@ _start:
 	cmpb $0x34, -128(%rbp)
 	je .div
 	
+	cmpb $0x35, -128(%rbp)
+	je .sort
+	
 .add:
 call addition
 jmp .end
@@ -145,10 +148,13 @@ jmp .end
 call division
 jmp .end
 
-.end:
+.sort:
 	leaq float_array, %rdi
 	addq $20, %rdi
 	call sort
 
+.end:
+
+	call print_endl
 	movl $60, %eax
 	syscall
