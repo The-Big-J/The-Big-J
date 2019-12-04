@@ -18,8 +18,13 @@ float_array: .fill 400
 http: .string "Content-type: text/html\n"
 .equ htmllen,.-http 
 
-prompt_msg: .ascii "Please enter some floating-point numbers, to exit, enter nothing and press enter\n"
+prompt_msg: .ascii "\033[92m"
+			.ascii "Please enter some floating-point numbers, to exit, enter nothing and press enter\n"
 .equ promptlen,.-prompt_msg 
+
+prec_err_msg:	.ascii "\033[93m"
+				.ascii "Precision error detected.\033[39m"
+.equ prec_err_len,.-prec_err_msg
 
 prompt_msg2: .ascii "1 for add, 2 for sub, 3 for mul, 4 for div, 5 for sort\n"
 .equ promptlen2,.-prompt_msg2
@@ -46,30 +51,6 @@ _start:
 	movl %eax, argc
 	movq %rbx, argv 
 	
-#.cgi:
-#	decq %rsp
-#	cmpq $':', %rsp
-#	jne .cgi
-	
-#.cgi2:
-#	incq %rsp
-#	cmpq $'=', %rsp
-#	jne .cgi2
-#	incq %rsp
-
-#.cgi3:
-#	movl $0, %eax
-#	movl $0, %edi
-#	movl $128, %edx
-#	leaq -128(%rbp), %rsi
-#	syscall 
-#	incq %rsp
-#	cmpq $'&', %rsp
-#	jne .cgi3
-	
-	
-	
-	
 	# Setup stack frame 
 	pushq %rbp
 	movq %rsp, %rbp 
@@ -78,8 +59,8 @@ _start:
 	movl $1, %edi
 	movq $htmllen, %rdx
 	leaq http, %rsi
-	syscall
-
+	#syscall
+.start1:
 	movl $1, %eax
 	movl $1, %edi
 	movq $promptlen, %rdx
@@ -108,6 +89,14 @@ _start:
 	cmpq $3, %r9
 	ja .OPQRST
 	incq %r9
+	jmp .loop 
+
+.error_float:
+	movl $1, %eax
+	movl $1, %edi
+	movl $error_string_len, %edx
+	leaq error_string, %rsi
+	syscall
 	jmp .loop 
 
 .OPQRST:
@@ -151,7 +140,7 @@ _start:
 	leaq addmsg, %rsi
 	syscall 
 	call addition
-jmp .end
+	jmp .end
 
 .sub:
 movl $1, %eax
@@ -159,8 +148,8 @@ movl $1, %eax
 	movq $sublen, %rdx
 	leaq submsg, %rsi
 	syscall 
-call subtraction
-jmp .end
+	call subtraction
+	jmp .end
 
 .mul:
 movl $1, %eax
@@ -168,8 +157,8 @@ movl $1, %eax
 	movq $mullen, %rdx
 	leaq mulmsg, %rsi
 	syscall 
-call multipulcation
-jmp .end
+	call multipulcation
+	jmp .end
 
 .div:
 movl $1, %eax
@@ -177,8 +166,8 @@ movl $1, %eax
 	movq $divlen, %rdx
 	leaq divmsg, %rsi
 	syscall 
-call division
-jmp .end
+	call division
+	jmp .end
 
 .sort:
 	leaq float_array, %rdi
@@ -186,7 +175,8 @@ jmp .end
 	call sort
 
 .end:
-
+	
 	call print_endl
+	jmp .start1 
 	movl $60, %eax
 	syscall

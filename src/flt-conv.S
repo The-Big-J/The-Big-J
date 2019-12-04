@@ -22,7 +22,7 @@
 .global parse_float 
 
 # String constants
-error_string: .ascii "Failed to parse float: Malformed float"
+error_string: .ascii "Failed to parse float: Malformed float. Try again.\n"
 .equ error_string_len,.-error_string 
 
 # Converts the int in rax to a string and stores it in rsi
@@ -303,6 +303,7 @@ read_float:
 verify_float:
 	pushq %rbp
 	movq %rsp, %rbp 
+	pushq %rsi
 	# Flag for a decimal point at rbp-16
 	movb $0, -16(%rbp)
 	# LOOP
@@ -325,10 +326,16 @@ verify_float:
 	jz .done69
 	jmp .verify_loop
 .done79:
-	movl $0, %eax 
+	movl $0, %eax
+	jmp .done69 
 .error_verify_float:
 	movl $1, %eax 
 .done69:
+	cmpb $1, -16(%rbp)
+	je .done59
+	movl $1, %eax 
+.done59:
+	popq %rsi 
 	popq %rbp 
 	ret
 
