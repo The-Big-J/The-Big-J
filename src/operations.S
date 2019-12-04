@@ -6,8 +6,8 @@
 addition:
 pushq %rbp
 movq %rsp, %rbp 
-movss %xmm11, %xmm0
-movss %xmm12, %xmm1
+movss %xmm11, %xmm1
+movss %xmm12, %xmm0
 movss %xmm1, %xmm2
 addss %xmm0, %xmm1
 call print_float
@@ -17,8 +17,8 @@ ret
 subtraction:
 pushq %rbp
 	movq %rsp, %rbp 
-movss %xmm11, %xmm0
-movss %xmm12, %xmm1
+movss %xmm11, %xmm1
+movss %xmm12, %xmm0
 movss %xmm1, %xmm2
 subss %xmm0, %xmm1
 call print_float
@@ -28,8 +28,8 @@ ret
 division:
 pushq %rbp
 	movq %rsp, %rbp 
-movss %xmm11, %xmm0
-movss %xmm12, %xmm1
+movss %xmm11, %xmm1
+movss %xmm12, %xmm0
 movss %xmm1, %xmm2
 divss %xmm0, %xmm1
 call print_float
@@ -39,8 +39,8 @@ ret
 multipulcation:
 pushq %rbp
 	movq %rsp, %rbp 
-movss %xmm11, %xmm0
-movss %xmm12, %xmm1
+movss %xmm11, %xmm1
+movss %xmm12, %xmm0
 movss %xmm1, %xmm2
 mulss %xmm0, %xmm1
 call print_float

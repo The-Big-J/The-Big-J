@@ -94,16 +94,16 @@ _start:
 	leaq -128(%rbp), %rsi
 	syscall 
 	
-	cmpb $0x1, -128(%rbp)
+	cmpb $0x31, -128(%rbp)
 	je .add
 
-	cmpb $0x2, -128(%rbp)
+	cmpb $0x32, -128(%rbp)
 	je .sub
 	
-	cmpb $0x3, -128(%rbp)
+	cmpb $0x33, -128(%rbp)
 	je .mul
 	
-	cmpb $0x4, -128(%rbp)
+	cmpb $0x34, -128(%rbp)
 	je .div
 	
 .add:
@@ -122,8 +122,10 @@ jmp .end
 call division
 jmp .end
 
+
+
 .end:
-	# Print out all the shit
+	call sort
 
 	movl $60, %eax
 	syscall
