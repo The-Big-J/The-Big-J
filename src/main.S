@@ -24,6 +24,18 @@ prompt_msg: .ascii "Please enter some floating-point numbers, to exit, enter not
 prompt_msg2: .ascii "1 for add, 2 for sub, 3 for mul, 4 for div, 5 for sort\n"
 .equ promptlen2,.-prompt_msg2
 
+addmsg: .ascii "Sum is: "
+.equ addlen,.-addmsg
+
+submsg: .ascii "Difference is: "
+.equ sublen,.-addmsg
+
+mulmsg: .ascii "Product is: "
+.equ mullen,.-addmsg
+
+divmsg: .ascii "Quotient is: "
+.equ divlen,.-addmsg
+
 test_float: .ascii "-124.552\n"
 .equ test_float_len,.-test_float 
 
@@ -133,18 +145,38 @@ _start:
 	je .sort
 	
 .add:
-call addition
+	movl $1, %eax
+	movl $1, %edi
+	movq $addlen, %rdx
+	leaq addmsg, %rsi
+	syscall 
+	call addition
 jmp .end
 
 .sub:
+movl $1, %eax
+	movl $1, %edi
+	movq $sublen, %rdx
+	leaq submsg, %rsi
+	syscall 
 call subtraction
 jmp .end
 
 .mul:
+movl $1, %eax
+	movl $1, %edi
+	movq $mullen, %rdx
+	leaq mulmsg, %rsi
+	syscall 
 call multipulcation
 jmp .end
 
 .div:
+movl $1, %eax
+	movl $1, %edi
+	movq $divlen, %rdx
+	leaq divmsg, %rsi
+	syscall 
 call division
 jmp .end
 
