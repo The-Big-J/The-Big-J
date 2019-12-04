@@ -443,7 +443,8 @@ parse_float:
 .pow_loop:
 	mulss %xmm1, %xmm4
 	decl %eax 
-	jnz .pow_loop
+	cmpq $0, %rax
+	jg .pow_loop
 	
 	# Divide the result by the number of decimal places
 	divss %xmm4, %xmm2 # xmm2 = xmm2 / xmm1
