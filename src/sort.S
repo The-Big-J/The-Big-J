@@ -17,7 +17,7 @@ sort:
 	incq		%r15
 
 bigLoop:		
-	cmpq	1,	%r15		#r15 will count down from nums of f_num to 1
+	cmpq	$1,	%r15		#r15 will count down from nums of f_num to 1
 	jbe		done			#then end
 	movq	$0,		%r8		#start swapping from first element
 	movq	$1,		%r9

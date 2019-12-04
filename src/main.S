@@ -122,8 +122,6 @@ jmp .end
 call division
 jmp .end
 
-
-
 .end:
 	call sort
 
