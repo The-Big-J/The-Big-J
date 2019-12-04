@@ -27,18 +27,16 @@ _start:
 	movl %eax, argc
 	movq %rbx, argv 
 	
-#.loop:
+#.cgi:
 #	subq $1, %rsp
 #	cmpb $':', %rsp
-#	jne .loop
+#	jne .cgi
 	
-#.loop2:
+#.cgi2:
 #	incq %rsp
 #	cmpb $'=', %rsp
-#	jne .loop2
+#	jne .cgi2
 #	incq %rsp
-	
-	
 
 	# Setup stack frame 
 	pushq %rbp
@@ -51,7 +49,6 @@ _start:
 	syscall 
 	# Load pointer to our float array 
 	leaq float_array, %rdi 
-	movq $0, %r15
 .loop:
 	pushq %rdi 
 	movl $0, %eax
@@ -71,9 +68,9 @@ _start:
 	addq $4, %rdi 
 	
 	call print_float
-	cmpq $4, %r15
+	cmpq $4, %r9
 	ja .OPQRST
-	incq %r15
+	incq %r9
 	jmp .loop 
 
 .OPQRST:
