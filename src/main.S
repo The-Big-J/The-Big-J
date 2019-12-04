@@ -67,7 +67,6 @@ _start:
 	movss %xmm0, (%rdi)
 	addq $4, %rdi 
 	
-	call print_float
 	cmpq $4, %r9
 	ja .OPQRST
 	incq %r9
