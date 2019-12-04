@@ -4,6 +4,8 @@
 
 .data
 
+
+
 # argc and argv 
 argc: .long 0
 argv: .quad 0
@@ -13,6 +15,9 @@ float_array: .fill 400
 .text
 
 .global _start
+
+http: .string "Content-type: text/html\n"
+.equ htmllen,.-http 
 
 prompt_msg: .ascii "Please enter some floating-point numbers, to exit, enter nothing and press enter\n"
 .equ promptlen,.-prompt_msg 
@@ -31,7 +36,7 @@ _start:
 	movq %rbx, argv 
 	
 #.cgi:
-#	subq $1, %rsp
+#	decq %rsp
 #	cmpb $':', %rsp
 #	jne .cgi
 	
@@ -41,9 +46,18 @@ _start:
 #	jne .cgi2
 #	incq %rsp
 
+#.cgi3:
+	
+	
+	
 	# Setup stack frame 
 	pushq %rbp
 	movq %rsp, %rbp 
+
+	movl $1, %eax
+	movl $1, %edi
+	movq $htmllen, %rdx
+	leaq http, %rsi
 
 	movl $1, %eax
 	movl $1, %edi
