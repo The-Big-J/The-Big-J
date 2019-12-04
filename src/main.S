@@ -14,6 +14,7 @@ float_array: .fill 400
 
 .global _start
 
+
 http: .string "Content-type: text/html\n"
 .equ htmllen,.-http 
 
@@ -145,6 +146,8 @@ call division
 jmp .end
 
 .end:
+	leaq float_array, %rdi
+	addq $20, %rdi
 	call sort
 
 	movl $60, %eax
