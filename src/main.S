@@ -26,6 +26,19 @@ _start:
 	movq 8(%rsp), %rbx
 	movl %eax, argc
 	movq %rbx, argv 
+	
+#.loop:
+#	subq $1, %rsp
+#	cmpb $':', %rsp
+#	jne .loop
+	
+#.loop2:
+#	incq %rsp
+#	cmpb $'=', %rsp
+#	jne .loop2
+#	incq %rsp
+	
+	
 
 	# Setup stack frame 
 	pushq %rbp
@@ -49,19 +62,14 @@ _start:
 	cmpb $0xA, -128(%rbp)
 	je .end 
 
-	pushq %rax 
-	leaq -128(%rbp), %rsi
-	call verify_float
-	cmpl $1, %eax
-	je .end
-	popq %rax 
-
 	leaq -128(%rbp), %rsi 
 	call parse_float 
 	
 	popq %rdi
 	movss %xmm0, (%rdi)
 	addq $4, %rdi 
+	
+	call print_float
 
 	jmp .loop 
 
