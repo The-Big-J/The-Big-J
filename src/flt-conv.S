@@ -438,14 +438,17 @@ parse_float:
 .continue1: 
 	cvtsi2ss %ebx, %xmm2 # xmm2 = the number
 	movss %xmm1, %xmm4 	
-	# Multiply 10 by the number of decimals
-	decl %eax 
+	# Multiply 10 by the number of decimals 
+	cmpl $1, %eax
+	je .end_pow_loop
+	decl %eax
 .pow_loop:
 	mulss %xmm1, %xmm4
 	decl %eax 
-	cmpq $0, %rax
-	jg .pow_loop
+	cmpl $0, %eax
+	ja .pow_loop
 	
+.end_pow_loop:
 	# Divide the result by the number of decimal places
 	divss %xmm4, %xmm2 # xmm2 = xmm2 / xmm1
 
