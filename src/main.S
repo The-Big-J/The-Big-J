@@ -51,6 +51,7 @@ _start:
 	syscall 
 	# Load pointer to our float array 
 	leaq float_array, %rdi 
+	movq $0, %r15
 .loop:
 	pushq %rdi 
 	movl $0, %eax
@@ -70,9 +71,18 @@ _start:
 	addq $4, %rdi 
 	
 	call print_float
-
+	cmpq $4, %r15
+	ja .OPQRST
+	incq %r15
 	jmp .loop 
 
+.OPQRST:
+	movss -16(%rdi), %xmm11
+	movss -12(%rdi), %xmm12
+	movss -8(%rdi), %xmm13
+	movss -4(%rdi), %xmm14
+	movss (%rdi), %xmm15
+	
 .end:
 	# Print out all the shit
 
