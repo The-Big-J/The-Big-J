@@ -23,6 +23,7 @@ rep2: .ascii "Repeat operation choices? (Enter 1 to repeat, otherwise, enter any
 
 prompt_msg: .ascii "\033[92m"
 			.ascii "Please enter at least 2 floating-point numbers, up to a maximum of 5. To exit input choices, enter nothing and press enter\n"
+			.ascii "\033[39m"
 .equ promptlen,.-prompt_msg 
 
 prec_err_msg:	.ascii "\033[93m"
