@@ -9,7 +9,7 @@ argc: .long 0
 argv: .quad 0
 
 float_array: .fill 400
-float_array_size: . long 0
+float_array_size: .long 0
 
 .text
 
@@ -150,6 +150,8 @@ _start:
 	
 	cmpb $0x35, -128(%rbp)
 	je .sort
+	
+	
 	
 .add:
 	movl $1, %eax

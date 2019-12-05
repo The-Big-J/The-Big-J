@@ -15,8 +15,8 @@
 sort:
 	pushq %rbp
 	movq %rsp, %rbp
-	
-	movq	$5,	%r15	#holds number of f_numbers
+
+	movq	%rax,	%r15	#holds number of f_numbers
 	#incq			%r15
 
 bigLoop:		
@@ -26,7 +26,7 @@ bigLoop:
 	movq	$1,		%r9
 	subq	$1,		%r15
 smallLoop:
-	cmpq	$4,		%r8	#stop swapping here
+	cmpq	%r15,		%r8	#stop swapping here
 	jae		bigLoop
 	movss -20(%rdi, %r8, 4), %xmm0
 	movss -20(%rdi, %r9, 4), %xmm1
