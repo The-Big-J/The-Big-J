@@ -29,7 +29,7 @@ prec_err_msg:	.ascii "\033[93m"
 				.ascii "Precision error detected.\033[39m"
 .equ prec_err_len,.-prec_err_msg
 
-prompt_msg2: .ascii "1 for add, 2 for sub, 3 for mul, 4 for div, 5 for sort\n"
+prompt_msg2: .ascii "Enter the following number for operations of the first two numbers: 1 for Addition, 2 for Subtraction, 3 for Multipulcation, 4 for Division. Enter 5 for a sorted list of the numbers\n"
 .equ promptlen2,.-prompt_msg2
 
 addmsg: .ascii "Sum is: "
@@ -151,7 +151,7 @@ _start:
 	cmpb $0x35, -128(%rbp)
 	je .sort
 	
-	
+	jmp .terminate
 	
 .add:
 	movl $1, %eax
@@ -172,7 +172,7 @@ movl $1, %eax
 	jmp .end
 
 .mul:
-movl $1, %eax
+	movl $1, %eax
 	movl $1, %edi
 	movq $mullen, %rdx
 	leaq mulmsg, %rsi
@@ -181,7 +181,7 @@ movl $1, %eax
 	jmp .end
 
 .div:
-movl $1, %eax
+	movl $1, %eax
 	movl $1, %edi
 	movq $divlen, %rdx
 	leaq divmsg, %rsi
@@ -212,6 +212,7 @@ movl $1, %eax
 	
 	cmpb $0x31, -128(%rbp)
 	je .opchoice
-	
+
+.terminate:
 	movl $60, %eax
 	syscall
