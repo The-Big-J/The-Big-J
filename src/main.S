@@ -9,17 +9,20 @@ argc: .long 0
 argv: .quad 0
 
 float_array: .fill 400
+float_array_size: . long 0
 
 .text
 
 .global _start
 
+repeatmsg: .ascii "Repeat input values? (Enter 1 to repeat, otherwise, enter anything to continue the program) "
+.equ replen,.-repeatmsg
 
-http: .string "Content-type: text/html\n"
-.equ htmllen,.-http 
+rep2: .ascii "Repeat operation choices? (Enter 1 to repeat, otherwise, enter anything to exit)  "
+.equ rep2len,.-rep2
 
 prompt_msg: .ascii "\033[92m"
-			.ascii "Please enter some floating-point numbers, to exit, enter nothing and press enter\n"
+			.ascii "Please enter at least 2 floating-point numbers, up to a maximum of 5. To exit input choices, enter nothing and press enter\n"
 .equ promptlen,.-prompt_msg 
 
 prec_err_msg:	.ascii "\033[93m"
@@ -54,12 +57,7 @@ _start:
 	# Setup stack frame 
 	pushq %rbp
 	movq %rsp, %rbp 
-
-	movl $1, %eax
-	movl $1, %edi
-	movq $htmllen, %rdx
-	leaq http, %rsi
-	#syscall
+	
 .start1:
 	movl $1, %eax
 	movl $1, %edi
@@ -68,6 +66,8 @@ _start:
 	syscall 
 	# Load pointer to our float array 
 	leaq float_array, %rdi 
+	movl $0, float_array_size
+	movq $0, %r9
 .loop:
 	pushq %rdi 
 	movl $0, %eax
@@ -77,7 +77,7 @@ _start:
 	syscall 
 
 	cmpb $0xA, -128(%rbp)
-	je .OPQRST
+	je .inputComplete
 
 	leaq -128(%rbp), %rsi 
 	call parse_float 
@@ -85,9 +85,10 @@ _start:
 	popq %rdi
 	movss %xmm0, (%rdi)
 	addq $4, %rdi 
+	addl $1, float_array_size
 	
 	cmpq $3, %r9
-	ja .OPQRST
+	ja .inputComplete
 	incq %r9
 	jmp .loop 
 
@@ -99,12 +100,29 @@ _start:
 	syscall
 	jmp .loop 
 
-.OPQRST:
+.inputComplete:
+	movl $1, %eax
+	movl $1, %edi
+	movq $replen, %rdx
+	leaq repeatmsg, %rsi
+	syscall 
+	
+	movl $0, %eax
+	movl $0, %edi
+	movl $128, %edx
+	leaq -128(%rbp), %rsi
+	syscall 
+	
+	cmpb $0x31, -128(%rbp)
+	je .start1
+
 	movss (float_array), %xmm11
 	movss (float_array+4), %xmm12
 	movss (float_array+8), %xmm13
 	movss (float_array+12), %xmm14
 	movss (float_array+16), %xmm15
+	
+.opchoice:
 	
 	movl $1, %eax
 	movl $1, %edi
@@ -171,12 +189,27 @@ movl $1, %eax
 
 .sort:
 	leaq float_array, %rdi
+	movq $0, %rax
+	movl float_array_size, %eax
 	addq $20, %rdi
 	call sort
 
 .end:
-	
 	call print_endl
-	jmp .start1 
+	movl $1, %eax
+	movl $1, %edi
+	movq $rep2len, %rdx
+	leaq rep2, %rsi
+	syscall 
+	
+	movl $0, %eax
+	movl $0, %edi
+	movl $128, %edx
+	leaq -128(%rbp), %rsi
+	syscall 
+	
+	cmpb $0x31, -128(%rbp)
+	je .opchoice
+	
 	movl $60, %eax
 	syscall
