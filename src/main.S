@@ -8,7 +8,7 @@
 argc: .long 0
 argv: .quad 0
 
-float_array: .fill 400
+float_array: .fill 40
 float_array_size: .long 0
 
 .text
@@ -37,16 +37,13 @@ addmsg: .ascii "Sum is: "
 .equ addlen,.-addmsg
 
 submsg: .ascii "Difference is: "
-.equ sublen,.-addmsg
+.equ sublen,.-submsg 
 
 mulmsg: .ascii "Product is: "
-.equ mullen,.-addmsg
+.equ mullen,.-mulmsg 
 
 divmsg: .ascii "Quotient is: "
-.equ divlen,.-addmsg
-
-test_float: .ascii "-124.552\n"
-.equ test_float_len,.-test_float 
+.equ divlen,.-divmsg 
 
 _start:
 	# Save command line parameters
@@ -164,7 +161,7 @@ _start:
 	jmp .end
 
 .sub:
-movl $1, %eax
+	movl $1, %eax
 	movl $1, %edi
 	movq $sublen, %rdx
 	leaq submsg, %rsi
@@ -173,7 +170,7 @@ movl $1, %eax
 	jmp .end
 
 .mul:
-movl $1, %eax
+	movl $1, %eax
 	movl $1, %edi
 	movq $mullen, %rdx
 	leaq mulmsg, %rsi
@@ -182,7 +179,7 @@ movl $1, %eax
 	jmp .end
 
 .div:
-movl $1, %eax
+	movl $1, %eax
 	movl $1, %edi
 	movq $divlen, %rdx
 	leaq divmsg, %rsi
