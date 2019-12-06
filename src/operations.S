@@ -12,12 +12,12 @@ addition:
 	pushq %rbp
 	movq %rsp, %rbp 
 	movss %xmm11, %xmm1
-	movss %xmm12, %xmm0
+	movss %xmm12, %xmm0 #moves first two values into xmm1 and xmm0
 	movss %xmm1, %xmm2
-	addss %xmm0, %xmm1
-	call print_float
+	addss %xmm0, %xmm1 #does addition operation of xmm0 and xmm1 and stores in xmm1
+	call print_float #calls print_float which will print the value in xmm1
 	popq %rbp
-	ret
+	ret #returns to the line after it was called
 
 subtraction:
 	pushq %rbp
@@ -25,7 +25,7 @@ subtraction:
 	movss %xmm11, %xmm1
 	movss %xmm12, %xmm0
 	movss %xmm1, %xmm2
-	subss %xmm0, %xmm1
+	subss %xmm0, %xmm1 #does subtraction operation of xmm0 and xmm1 and stores in xmm1
 	call print_float
 	popq %rbp
 	ret
@@ -36,7 +36,7 @@ division:
 	movss %xmm11, %xmm1
 	movss %xmm12, %xmm0
 	movss %xmm1, %xmm2
-	divss %xmm0, %xmm1
+	divss %xmm0, %xmm1  #does division operation of xmm0 and xmm1 and stores in xmm1
 	call print_float
 	popq %rbp
 	ret
@@ -47,7 +47,7 @@ multipulcation:
 	movss %xmm11, %xmm1
 	movss %xmm12, %xmm0
 	movss %xmm1, %xmm2
-	mulss %xmm0, %xmm1
+	mulss %xmm0, %xmm1  #does multipulcation operation of xmm0 and xmm1 and stores in xmm1
 	call print_float
 	popq %rbp
 	ret

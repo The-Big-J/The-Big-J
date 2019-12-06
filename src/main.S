@@ -60,6 +60,7 @@ _start:
 	movq %rsp, %rbp 
 	
 .start1:
+	# Write prompt_msg
 	movl $1, %eax
 	movl $1, %edi
 	movq $promptlen, %rdx
@@ -75,24 +76,24 @@ _start:
 	movl $0, %edi
 	movl $128, %edx
 	leaq -128(%rbp), %rsi
-	syscall 
+	syscall #reads input
 
 	cmpb $0xA, -128(%rbp)
-	je .inputComplete
+	je .inputComplete #if user enters nothing, will jump to .inputComplete which will stop the user input
 
 	call verify_float 
 	cmpq $0, %rax
-	jne .error_float
+	jne .error_float #calls verify_float to check if the float parsed correctly. if not, jumps to .error_float
 
 	leaq -128(%rbp), %rsi 
-	call parse_float 
+	call parse_float #calls parse_float instruction
 	
 	popq %rdi
-	movss %xmm0, (%rdi)
-	addq $4, %rdi 
+	movss %xmm0, (%rdi) 
+	addq $4, %rdi #stores the converted input value into float_array, rdi is a pointer which is incremented by 4
 	addl $1, float_array_size
 	
-	cmpq $3, %r9
+	cmpq $3, %r9 #check if user entered the max of 5 inputs. If so, jumps to .inputComplete. if not, repeats the loop.
 	ja .inputComplete
 	incq %r9
 	jmp .loop 
@@ -104,29 +105,28 @@ _start:
 	leaq error_string, %rsi
 	syscall
 	popq %rdi 
-	jmp .loop 
+	jmp .loop #will display error_string, which occurs when the program is unable to parse the float.
 
 .inputComplete:
 	movl $1, %eax
 	movl $1, %edi
 	movq $replen, %rdx
 	leaq repeatmsg, %rsi
-	syscall 
+	syscall #asks and prompts the user if they want to re-enter inputs. 
 	
 	movl $0, %eax
 	movl $0, %edi
 	movl $128, %edx
 	leaq -128(%rbp), %rsi
 	syscall 
-	
 	cmpb $0x31, -128(%rbp)
-	je .start1
+	je .start1 #If user enters "1", it will jump to .start1 to redo the inputs. Otherwise, will continue the program.
 
 	movss (float_array), %xmm11
 	movss (float_array+4), %xmm12
 	movss (float_array+8), %xmm13
 	movss (float_array+12), %xmm14
-	movss (float_array+16), %xmm15
+	movss (float_array+16), %xmm15 #All five user input values are stored in xmm11-15. If user entered less than 5, the corresponding register will have a "0" in the register.
 	
 .opchoice:
 	
@@ -134,30 +134,30 @@ _start:
 	movl $1, %edi
 	movq $promptlen2, %rdx
 	leaq prompt_msg2, %rsi
-	syscall 
+	syscall #program will ask what operations they want to choose
 	
 	movl $0, %eax
 	movl $0, %edi
 	movl $128, %edx
 	leaq -128(%rbp), %rsi
-	syscall 
+	syscall  #user input, they can choose 1-5 for an operation
 	
 	cmpb $0x31, -128(%rbp)
-	je .add
+	je .add #if user enters 1, jumps to .add
 
 	cmpb $0x32, -128(%rbp)
-	je .sub
+	je .sub #if user enters 2, jumps to sub
 	
 	cmpb $0x33, -128(%rbp)
-	je .mul
+	je .mul #if user enters 3, jumps to mul
 	
 	cmpb $0x34, -128(%rbp)
-	je .div
+	je .div #if user enters 4, jumps to div
 	
 	cmpb $0x35, -128(%rbp)
-	je .sort
+	je .sort #if user enters 5, jumps to sort
 	
-	jmp .terminate
+	jmp .terminate #if user did not enter 1,2,3,4,5, the program will jump to terminate
 	
 .add:
 	movl $1, %eax
@@ -165,8 +165,8 @@ _start:
 	movq $addlen, %rdx
 	leaq addmsg, %rsi
 	syscall 
-	call addition
-	jmp .end
+	call addition 
+	jmp .end #writes addmsg, calls addition, jumps to .end
 
 .sub:
 	movl $1, %eax
@@ -175,7 +175,7 @@ _start:
 	leaq submsg, %rsi
 	syscall 
 	call subtraction
-	jmp .end
+	jmp .end #writes submsg, calls subtraction, jumps to .end
 
 .mul:
 	movl $1, %eax
@@ -184,7 +184,7 @@ _start:
 	leaq mulmsg, %rsi
 	syscall 
 	call multipulcation
-	jmp .end
+	jmp .end #writes mulmsg, calls multipulcation, jumps to .end
 
 .div:
 	movl $1, %eax
@@ -193,14 +193,14 @@ _start:
 	leaq divmsg, %rsi
 	syscall 
 	call division
-	jmp .end
+	jmp .end #writes divmsg, calls division, jumps to .end
 
 .sort:
 	leaq float_array, %rdi
 	movq $0, %rax
 	movl float_array_size, %eax
 	addq $20, %rdi
-	call sort
+	call sort #load address of float_array to %rdi, clears rax and moves the size of the array into eax, adds $20 into rdi for the maximum amount of values inputted, calls sort.
 
 .end:
 	call print_endl
@@ -208,16 +208,16 @@ _start:
 	movl $1, %edi
 	movq $rep2len, %rdx
 	leaq rep2, %rsi
-	syscall 
+	syscall #asks the user if they want to repeat operation choices
 	
 	movl $0, %eax
 	movl $0, %edi
 	movl $128, %edx
 	leaq -128(%rbp), %rsi
-	syscall 
+	syscall #reads user input
 	
 	cmpb $0x31, -128(%rbp)
-	je .opchoice
+	je .opchoice #if user enters 1, will repeat operation choices. otherwise, will continue to terminate.
 
 .terminate:
 	movl $1, %eax
