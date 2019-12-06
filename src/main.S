@@ -22,7 +22,7 @@ rep2: .ascii "Repeat operation choices? (Enter 1 to repeat, otherwise, enter any
 .equ rep2len,.-rep2
 
 prompt_msg: .ascii "\033[92m"
-			.ascii "Please enter at least 2 floating-point numbers, up to a maximum of 5. To exit input choices, enter nothing and press enter\n"
+			.ascii "Please enter at least 2 floating-point numbers, up to a maximum of 5. \nTo exit input choices, enter nothing and press enter\n"
 			.ascii "\033[39m"
 .equ promptlen,.-prompt_msg 
 
@@ -30,7 +30,7 @@ prec_err_msg:	.ascii "\033[93m"
 				.ascii "Precision error detected.\033[39m"
 .equ prec_err_len,.-prec_err_msg
 
-prompt_msg2: .ascii "Enter the following number for operations of the first two numbers: 1 for Addition, 2 for Subtraction, 3 for Multipulcation, 4 for Division. Enter 5 for a sorted list of the numbers\n"
+prompt_msg2: .ascii "Enter the following number for operations of the first two numbers: \n1 for Addition \n2 for Subtraction \n3 for Multipulcation \n4 for Division \n5 for a sorted list of the numbers \nWARNING: Entering any other character will terminate the program\n"
 .equ promptlen2,.-prompt_msg2
 
 addmsg: .ascii "Sum is: "
@@ -44,6 +44,9 @@ mulmsg: .ascii "Product is: "
 
 divmsg: .ascii "Quotient is: "
 .equ divlen,.-divmsg 
+
+endmsg: .ascii "Program has ended: Goodbye!\n"
+.equ endlen,.-endmsg 
 
 _start:
 	# Save command line parameters
@@ -212,5 +215,10 @@ _start:
 	je .opchoice
 
 .terminate:
+	movl $1, %eax
+	movl $1, %edi
+	movq $endlen, %rdx
+	leaq endmsg, %rsi
+	syscall 
 	movl $60, %eax
 	syscall
