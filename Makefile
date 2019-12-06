@@ -32,3 +32,4 @@ clean:
 
 dirs:
 	@mkdir -p bin/
+

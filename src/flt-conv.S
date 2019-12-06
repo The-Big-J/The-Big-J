@@ -296,9 +296,8 @@ verify_float:
 	je .done79 
 	cmpb $'.', (%rsi)
 	jne .cont1 
-	cmpb $1, -16(%rbp)
-	je .error_verify_float
-	movb $1, -16(%rbp) 
+	incb -16(%rbp)
+	jmp .verify_loop_tail
 .cont1: 
 	cmpb $':', (%rsi)
 	jae .error_verify_float
@@ -364,7 +363,6 @@ parse_float:
 	movb $'.', %bl
 	movb $0xA, %bh
 	call strlen 
-	call string_to_int 
 
 	# dl has the delimiter that was hit, so compare and see if we have
 	# another string to parse
