@@ -34,6 +34,7 @@ int_to_string:
 	# Clear rdx
 	xorl %edx, %edx
 	xorq %r10, %r10
+	incq %r10 
 	# Move 10 to rbx 
 	movq $10, %rbx
 	movq %rsi, %rcx
@@ -43,7 +44,7 @@ int_to_string:
 	cmpl $0, %eax
 	jge .printloop
 	# So it's negative...
-	negq %rax
+	negl %eax
 	movq $1, %r15 
 .printloop:
 	incq %r10 
@@ -256,6 +257,7 @@ print_float:
 	pushq %rbp
 	movq %rsp, %rbp
 
+	movl %eax, %eax 
 	# Convert the float 
 	call float_to_int
 
@@ -278,24 +280,6 @@ print_float:
 
 	popq %rbp 
 	ret 
-
-# Reads an integer from stdin
-read_int:
-	pushq %rbp
-	movq %rsp, %rbp
-
-	popq %rbp 
-	ret 
-
-# Reads a float from stdin
-# returns it in xmm1
-read_float:
-	pushq %rbp
-	movq %rsp, %rbp
-
-
-	popq %rbp
-	ret
 
 # Verifies a string is a valid floating point number
 # String in rsi, length in rax

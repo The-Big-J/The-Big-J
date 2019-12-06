@@ -8,7 +8,7 @@
 argc: .long 0
 argv: .quad 0
 
-float_array: .fill 400
+float_array: .fill 40
 float_array_size: .long 0
 
 .text
@@ -23,6 +23,7 @@ rep2: .ascii "Repeat operation choices? (Enter 1 to repeat, otherwise, enter any
 
 prompt_msg: .ascii "\033[92m"
 			.ascii "Please enter at least 2 floating-point numbers, up to a maximum of 5. To exit input choices, enter nothing and press enter\n"
+			.ascii "\033[39m"
 .equ promptlen,.-prompt_msg 
 
 prec_err_msg:	.ascii "\033[93m"
@@ -36,16 +37,13 @@ addmsg: .ascii "Sum is: "
 .equ addlen,.-addmsg
 
 submsg: .ascii "Difference is: "
-.equ sublen,.-addmsg
+.equ sublen,.-submsg 
 
 mulmsg: .ascii "Product is: "
-.equ mullen,.-addmsg
+.equ mullen,.-mulmsg 
 
 divmsg: .ascii "Quotient is: "
-.equ divlen,.-addmsg
-
-test_float: .ascii "-124.552\n"
-.equ test_float_len,.-test_float 
+.equ divlen,.-divmsg 
 
 _start:
 	# Save command line parameters
@@ -163,7 +161,7 @@ _start:
 	jmp .end
 
 .sub:
-movl $1, %eax
+	movl $1, %eax
 	movl $1, %edi
 	movq $sublen, %rdx
 	leaq submsg, %rsi
