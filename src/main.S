@@ -80,6 +80,10 @@ _start:
 	cmpb $0xA, -128(%rbp)
 	je .inputComplete
 
+	call verify_float 
+	cmpq $0, %rax
+	jne .error_float
+
 	leaq -128(%rbp), %rsi 
 	call parse_float 
 	
@@ -99,6 +103,7 @@ _start:
 	movl $error_string_len, %edx
 	leaq error_string, %rsi
 	syscall
+	popq %rdi 
 	jmp .loop 
 
 .inputComplete:

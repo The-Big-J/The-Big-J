@@ -22,7 +22,7 @@
 .global parse_float 
 
 # String constants
-error_string: .ascii "Failed to parse float: Malformed float. Try again.\n"
+error_string: .ascii "\033[93mFailed to parse float. All floats should be in the form [-]xxx.xxx Please try again.\n\033[39m"
 .equ error_string_len,.-error_string 
 
 # Converts the int in rax to a string and stores it in rsi
@@ -364,12 +364,15 @@ parse_float:
 	movb $'.', %bl
 	movb $0xA, %bh
 	call strlen 
+	call string_to_int 
 
 	# dl has the delimiter that was hit, so compare and see if we have
 	# another string to parse
 	cmpb $0xA, %dl 
-	je .end_float_parse
-
+	jne .parse_float_continue
+	popq %rbp
+	ret 
+.parse_float_continue:
 	# Save the old strlen
 	pushq %rax 
 
@@ -454,6 +457,6 @@ parse_float:
 	# Add the two numbers together to get the float
 	addss %xmm2, %xmm0 
 
-.parse_float_end: 
+.parse_float_end:
 	popq %rbp
 	ret 
