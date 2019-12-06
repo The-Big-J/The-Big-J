@@ -409,10 +409,10 @@ parse_float:
 	cmpq $0, %rax
 	jge .continue_float_parse
 	movb $1, -199(%rbp)
-	jmp .boi
+	jmp .continue_float_parse2
 .continue_float_parse:
 	movb $0, -199(%rbp)
-.boi: 
+.continue_float_parse2: 
 	cvtsi2ss %eax, %xmm0 
 
 	# Convert the second number to an integer
